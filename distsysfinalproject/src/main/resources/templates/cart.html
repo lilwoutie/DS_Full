@@ -1,0 +1,74 @@
+<!-- src/main/resources/templates/cart.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="/css/restaurant.css" th:href="@{/css/restaurant.css}">
+    <script src="/js/common.js" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+<header class="header-bar">
+    <div class="header-left">
+        <a th:href="@{/}">
+            <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+        </a>
+    </div>
+
+    <div class="header-center">
+        <h1>Your Cart</h1>
+        <p>Review and update your meals</p>
+    </div>
+    <div class="header-right">
+        <a th:href="@{/login}" class="icon-link">
+            <img src="/images/user.svg" th:src="@{/images/user.svg}" alt="User Icon" class="icon user-icon" />
+        </a>
+
+        <a th:href="@{/cart}" class="cart-icon-container">
+            <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart Icon" class="icon cart-icon" />
+            <span id="cart-count" class="cart-count-badge">0</span>
+        </a>
+
+    </div>
+
+</header>
+
+<main class="main-content">
+    <div class="menu-container">
+        <div class="menu-header-row">
+            <div class="col-name">Meal</div>
+            <div class="col-price">Price</div>
+            <div class="col-qty">Qty</div>
+            <div class="col-amount">Amount</div>
+        </div>
+
+        <div th:each="item : ${items}" class="meal-row">
+            <div class="col-name">
+                <span class="meal-name" th:text="${item.name}">Meal Name</span>
+            </div>
+            <div class="col-price" th:text="${item.price}">0.00</div>
+            <div class="col-qty">
+                <form th:action="@{/cart/update}" method="post">
+                    <input type="hidden" name="mealId" th:value="${item.mealId}"/>
+                    <button class="qty-btn" type="submit" name="quantity" th:value="${item.quantity - 1}">−</button>
+                    <input class="qty-input" type="text" th:value="${item.quantity}" readonly/>
+                    <button class="qty-btn" type="submit" name="quantity" th:value="${item.quantity + 1}">+</button>
+                </form>
+            </div>
+            <div class="col-amount" th:text="${item.price * item.quantity}">0.00</div>
+        </div>
+
+        <div class="submit-row">
+            <div class="submit-total">
+                <span>Total:</span>
+                <span th:text="${total}">0.00</span>
+            </div>
+            <form th:action="@{/cart/checkout}" method="post">
+                <button type="submit" class="add-cart-btn" th:disabled="${#lists.isEmpty(items)}">Proceed to Checkout</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

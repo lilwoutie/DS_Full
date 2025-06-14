@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirmation</title>
+  <link rel="stylesheet" href="/css/restaurant.css" th:href="@{/css/restaurant.css}">
+</head>
+<body>
+<header class="header-bar">
+  <div class="header-left">
+    <a th:href="@{/}">
+      <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+    </a>
+  </div>
+
+
+  <div class="header-center">
+    <h1>Thank You!</h1>
+    <p>Your order has been placed.</p>
+  </div>
+
+  <div class="header-right">
+    <a th:href="@{/login}" class="icon-link">
+      <img src="/images/user.svg" th:src="@{/images/user.svg}" alt="User Icon" class="icon user-icon" />
+    </a>
+
+    <a th:href="@{/cart}" class="cart-icon-container">
+      <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart Icon" class="icon cart-icon" />
+      <span id="cart-count" class="cart-count-badge">0</span>
+    </a>
+
+  </div>
+
+</header>
+
+<main class="main-content">
+  <div class="menu-container confirmation-box">
+    <p class="confirmation-text">We’ve received your order.</p>
+    <p class="confirmation-text">Total paid: <strong th:text="${total}">0.00</strong> EUR</p>
+
+    <a th:href="@{'/'}" class="add-cart-btn return-home-btn">Return to Home</a>
+  </div>
+</main>
+
+</body>
+</html>

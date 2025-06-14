@@ -1,0 +1,80 @@
+<!-- src/main/resources/templates/checkout.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="/css/restaurant.css" th:href="@{/css/restaurant.css}">
+    <script src="/js/common.js" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+<header class="header-bar">
+    <div class="header-left">
+        <a th:href="@{/}">
+            <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+        </a>
+    </div>
+
+    <div class="header-center">
+        <h1>Checkout</h1>
+        <p>Enter your details to place your order</p>
+    </div>
+    <div class="header-right">
+        <a th:href="@{/login}" class="icon-link">
+            <img src="/images/user.svg" th:src="@{/images/user.svg}" alt="User Icon" class="icon user-icon" />
+        </a>
+
+        <a th:href="@{/cart}" class="cart-icon-container">
+            <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart Icon" class="icon cart-icon" />
+            <span id="cart-count" class="cart-count-badge">0</span>
+        </a>
+
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="menu-container">
+
+        <!-- Error Message Display -->
+        <div th:if="${errorMessage}" class="error-message" style="background-color: #f8d7da; color: #842029; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c2c7; border-radius: 4px;">
+            <p th:text="${errorMessage}">An error occurred while processing your order.</p>
+        </div>
+
+        <form th:action="@{/checkout}" method="post" th:object="${orderForm}" class="checkout-form">
+            <div class="form-row">
+                <label for="fullName">Full Name</label>
+                <input type="text" th:field="*{fullName}" id="fullName" required/>
+            </div>
+            <div class="form-row">
+                <label for="address">Address</label>
+                <input type="text" th:field="*{address}" id="address" required/>
+            </div>
+            <div class="form-row">
+                <label for="deliveryMethod">Delivery Method</label>
+                <select th:field="*{deliveryMethod}" id="deliveryMethod">
+                    <option value="delivery" th:selected="${orderForm.deliveryMethod == 'delivery'}">Delivery</option>
+                    <option value="pickup" th:selected="${orderForm.deliveryMethod == 'pickup'}">Pickup</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="paymentMethod">Payment Method</label>
+                <select th:field="*{paymentMethod}" id="paymentMethod">
+                    <option value="CreditCard" th:selected="${orderForm.paymentMethod == 'CreditCard'}">Credit Card</option>
+                    <option value="Paypal" th:selected="${orderForm.paymentMethod == 'Paypal'}">PayPal</option>
+                    <option value="Apple Pay" th:selected="${orderForm.paymentMethod == 'Apple Pay'}">Apple Pay</option>
+                </select>
+            </div>
+
+            <!-- Display total; on error it remains from model -->
+            <div class="submit-row">
+                <div class="submit-total">
+                    <span>Total:</span>
+                    <span th:text="${total}">0.00</span>
+                </div>
+                <button type="submit" class="add-cart-btn">Place Order</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

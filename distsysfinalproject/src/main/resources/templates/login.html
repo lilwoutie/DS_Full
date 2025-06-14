@@ -1,0 +1,48 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" th:href="@{/css/restaurant.css}" />
+</head>
+<body>
+<header class="header-bar">
+  <div class="header-left">
+    <a th:href="@{/}">
+      <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+    </a>
+  </div>
+
+  <div class="header-center">
+    <h1>Admin Login</h1>
+    <p>Please sign in to view all orders</p>
+  </div>
+  <div class="header-right">
+    <a th:href="@{/cart}" class="cart-icon-container">
+      <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart" class="icon cart-icon"/>
+      <span id="cart-count" class="cart-count-badge">0</span>
+    </a>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="menu-container">
+    <form th:action="@{/login}" method="post" class="checkout-form">
+      <div th:if="${param.error}" style="color:red;">Invalid username or password.</div>
+      <div class="form-row">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required />
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+      </div>
+      <div class="submit-row">
+        <button type="submit" class="add-cart-btn">Login</button>
+      </div>
+    </form>
+  </div>
+</main>
+</body>
+</html>

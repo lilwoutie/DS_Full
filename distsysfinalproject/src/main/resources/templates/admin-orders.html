@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Orders</title>
+    <link rel="stylesheet" th:href="@{/css/restaurant.css}" />
+</head>
+<body>
+
+<header class="header-bar">
+    <div class="header-left">
+        <a th:href="@{/}">
+            <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+        </a>
+    </div>
+
+    <div class="header-center">
+        <h1>Admin Login</h1>
+        <p>Please enter your credentials</p>
+    </div>
+    <div class="header-right">
+        <a th:href="@{/cart}" class="cart-icon-container">
+            <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart Icon" class="icon cart-icon"/>
+            <span id="cart-count" class="cart-count-badge">0</span>
+        </a>
+
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="menu-container">
+        <table class="order-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Meals</th>
+                <th>Delivery</th>
+                <th>Payment</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.customerName}">Name</td>
+                <td th:text="${order.address}">Address</td>
+                <td>
+                    <ul>
+                        <li th:each="item : ${order.meals}"
+                            th:text="|${item.name} x ${item.quantity}|">Meal</li>
+                    </ul>
+                </td>
+                <td th:text="${order.deliveryOption}">Delivery</td>
+                <td th:text="${order.paymentMethod}">Payment</td>
+            </tr>
+            </tbody>
+
+        </table>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: 2rem; text-align: center;">
+            <button type="submit" class="add-cart-btn">Logout</button>
+        </form>
+
+        <!-- Distributed Transaction Logs Section -->
+        <section class="logs-section" style="margin-top: 3rem;">
+            <h2>Distributed Transaction Logs</h2>
+            <table class="logs-table" style="width:100%; border-collapse: collapse; margin-top: 1rem;">
+                <thead>
+                <tr>
+                    <th style="border:1px solid #ccc; padding:8px;">Transaction ID</th>
+                    <th style="border:1px solid #ccc; padding:8px;">Status</th>
+                    <th style="border:1px solid #ccc; padding:8px;">Created At</th>
+                    <th style="border:1px solid #ccc; padding:8px;">Updated At</th>
+                    <th style="border:1px solid #ccc; padding:8px;">Participants</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tx : ${transactionLogs}">
+                    <td style="border:1px solid #ccc; padding:8px;" th:text="${tx.id}">tx-uuid</td>
+                    <td style="border:1px solid #ccc; padding:8px;" th:text="${tx.status}">PREPARED</td>
+                    <td style="border:1px solid #ccc; padding:8px;"
+                        th:text="${#temporals.format(tx.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2025-06-12 10:00:00</td>
+                    <td style="border:1px solid #ccc; padding:8px;"
+                        th:text="${#temporals.format(tx.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2025-06-12 10:01:00</td>
+                    <td style="border:1px solid #ccc; padding:8px;">
+                        <!-- Nested participant table -->
+                        <table class="participant-table" style="width:100%; border-collapse: collapse; margin-top:5px;">
+                            <thead>
+                            <tr>
+                                <th style="border:1px solid #ccc; padding:6px;">Participant URL</th>
+                                <th style="border:1px solid #ccc; padding:6px;">Status</th>
+                                <th style="border:1px solid #ccc; padding:6px;">Created At</th>
+                                <th style="border:1px solid #ccc; padding:6px;">Updated At</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="p : ${participantLogsMap[tx.id]}">
+                                <td style="border:1px solid #ccc; padding:6px;" th:text="${p.participant}">http://localhost:8081</td>
+                                <td style="border:1px solid #ccc; padding:6px;" th:text="${p.status}">PREPARED</td>
+                                <td style="border:1px solid #ccc; padding:6px;"
+                                    th:text="${#temporals.format(p.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2025-06-12 10:00:05</td>
+                                <td style="border:1px solid #ccc; padding:6px;"
+                                    th:text="${#temporals.format(p.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2025-06-12 10:00:10</td>
+                            </tr>
+                            <!-- If no participants for this transaction, show a placeholder row -->
+                            <tr th:if="${#lists.isEmpty(participantLogsMap[tx.id])}">
+                                <td colspan="4" style="border:1px solid #ccc; padding:6px; text-align:center;">
+                                    No participant logs.
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <!-- If no transaction logs exist -->
+                <tr th:if="${#lists.isEmpty(transactionLogs)}">
+                    <td colspan="5" style="border:1px solid #ccc; padding:8px; text-align:center;">
+                        No transaction logs found.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>
+</body>
+</html>

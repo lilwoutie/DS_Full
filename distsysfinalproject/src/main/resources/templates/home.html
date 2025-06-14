@@ -1,0 +1,63 @@
+<!-- src/main/resources/templates/home.html -->
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Food Delivery Home</title>
+    <!-- Link to custom CSS -->
+    <link rel="stylesheet" href="/css/home.css" th:href="@{/css/home.css}" />
+    <script src="/js/common.js" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+<!-- HEADER BAR -->
+<header class="header-bar">
+    <div class="header-left">
+        <a th:href="@{/}">
+            <img src="/images/home.svg" th:src="@{/images/home.svg}" alt="Home Icon" class="icon home-icon" />
+        </a>
+    </div>
+
+
+    <!-- PAGE TITLE (center) -->
+    <div class="header-center">
+        <h1>Welcome to Our Food Delivery Application!</h1>
+    </div>
+
+    <!-- CART ICON (top‐right) -->
+    <div class="header-right">
+        <a th:href="@{/login}" class="icon-link">
+            <img src="/images/user.svg" th:src="@{/images/user.svg}" alt="User Icon" class="icon user-icon" />
+        </a>
+
+        <a th:href="@{/cart}" class="cart-icon-container">
+            <img src="/images/cart.svg" th:src="@{/images/cart.svg}" alt="Cart Icon" class="icon cart-icon" />
+            <span id="cart-count" class="cart-count-badge">0</span>
+        </a>
+
+    </div>
+
+</header>
+
+<!-- MAIN CONTENT: Two Restaurant CARDS -->
+<main class="main-content">
+    <div class="restaurant-cards">
+        <!-- RESTAURANT A CARD -->
+        <a href="#" th:href="@{/restaurant/1}" class="restaurant-card">
+            <div class="card-content">
+                <h2>Rest A</h2>
+            </div>
+        </a>
+        <!-- RESTAURANT B CARD -->
+        <a href="#" th:href="@{/restaurant/2}" class="restaurant-card">
+            <div class="card-content">
+                <h2>Rest B</h2>
+            </div>
+        </a>
+    </div>
+</main>
+</body>
+</html>
