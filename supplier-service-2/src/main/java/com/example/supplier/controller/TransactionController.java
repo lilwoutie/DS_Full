@@ -4,7 +4,9 @@ import com.example.supplier.dto.OrderRequest;
 import com.example.supplier.dto.TransactionPrepareRequest;
 import com.example.supplier.model.Product;
 import com.example.supplier.model.StagedProduct;
+import com.example.supplier.model.TransactionLogEntry;
 import com.example.supplier.service.ProductService;
+import com.example.supplier.util.TransactionLogger;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,12 +19,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TransactionController {
 
     private final ProductService productService;
+    private final TransactionLogger logger = new TransactionLogger();
 
     // transactionId -> Map<productId, stagedProduct>
     private final Map<String, Map<Long, StagedProduct>> stagedItems = new ConcurrentHashMap<>();
 
     public TransactionController(ProductService productService) {
         this.productService = productService;
+
+        for (TransactionLogEntry entry : logger.readPendingTransactions()) {
+            Map<Long, StagedProduct> staged = new HashMap<>();
+            for (Long productId : entry.getProductIds()) {
+                Optional<Product> product = productService.getProductById(productId);
+                product.ifPresent(p -> staged.put(productId, new StagedProduct(productId, p)));
+            }
+            stagedItems.put(entry.getTransactionId(), staged);
+        }
     }
 
     private int getTotalStagedQuantity(Long productId) {
@@ -80,7 +92,17 @@ public class TransactionController {
             stagedForTxn.put(productId, new StagedProduct(productId, stagedProduct));
         }
 
+        // Only put staged map once
         stagedItems.put(transactionId, stagedForTxn);
+
+        // Log the PREPARE
+
+        List<Long> productIds = new ArrayList<>(stagedForTxn.keySet());
+        TransactionLogEntry logEntry = new TransactionLogEntry(transactionId, "PREPARE", productIds);
+        System.out.println("About to log transaction...");
+        logger.logTransaction(logEntry);
+        logger.logPending(logEntry);
+        System.out.println("Finished logging transaction.");
         return ResponseEntity.ok("Prepared transaction " + transactionId + " with " + items.size() + " item(s)");
     }
 
@@ -95,12 +117,23 @@ public class TransactionController {
             productService.updateProduct(staged.productId(), staged.product());
         }
 
+        List<Long> productIds = new ArrayList<>(stagedMap.keySet());
+        TransactionLogEntry logEntry = new TransactionLogEntry(transactionId, "COMMIT", productIds);
+        logger.logTransaction(logEntry);
+        logger.removePending(transactionId);
+
         return ResponseEntity.ok("Committed transaction " + transactionId);
     }
 
     @PostMapping("/rollback/{transactionId}")
     public ResponseEntity<String> rollback(@PathVariable String transactionId) {
-        if (stagedItems.remove(transactionId) != null) {
+        Map<Long, StagedProduct> rolledBack = stagedItems.remove(transactionId);
+        if (rolledBack != null) {
+            List<Long> productIds = new ArrayList<>(rolledBack.keySet());
+            TransactionLogEntry logEntry = new TransactionLogEntry(transactionId, "ROLLBACK", productIds);
+            logger.logTransaction(logEntry);
+            logger.removePending(transactionId);
+
             return ResponseEntity.ok("Rolled back transaction " + transactionId);
         } else {
             return ResponseEntity.status(404).body("No transaction to rollback with ID " + transactionId);
