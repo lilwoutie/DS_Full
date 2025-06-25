@@ -1,0 +1,66 @@
+db: 
+http://localhost:8081/h2-console/
+http://localhost:8082/h2-console/
+JDBC URL:
+jdbc:h2:mem:supplierdb
+
+commando's:
+intellij-idea-ultimate
+
+curl -X POST http://localhost:8081/transaction/prepare/txn1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "quantity": 1
+      }
+    ]
+  }'
+
+curl -i -X POST http://<supplier-host>:8081/transaction/commit/tx123 
+curl -i -X POST http://<supplier-host>:8081/transaction/rollback/tx123 
+
+curl http://localhost:8081/transaction/staged 
+
+
+-----------------------------------------------------------
+SSH into remote machine:
+    SSH: ssh -i ~/.ssh/id_rsa.pem supplier1@52.178.15.136 
+
+    App Port: 8081 
+
+    REST base: http://52.178.15.136:8081 
+
+Pw: Supplier.123 
+
+ 
+
+Start service: 
+- java -jar supplier-service-1.0-SNAPSHOT.jar 
+
+http://52.178.15.136:8081 
+curl -X POST http://52.178.15.136:8081/transaction/prepare/txn1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 2
+      },
+      {
+        "productId": 2,
+        "quantity": 1
+      }
+    ]
+  }'
+
+
+curl -i -X POST http://52.178.15.136:8081/transaction/commit/tx123 
+curl -i -X POST http://52.178.15.136:8081/transaction/rollback/tx123 
+
+curl http://52.178.15.136:8081/transaction/staged 

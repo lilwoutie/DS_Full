@@ -97,7 +97,7 @@ public class RestaurantController {
         if (id == 1) {
             restaurantName = "Rest A";
             restaurantDescription = "A selection of delicious meals.";
-            supplierBaseUrl = "http://52.178.15.136:8081"; // Supplier 1
+            supplierBaseUrl = "http://localhost:8081"; // Supplier 1
         } else {
             restaurantName = "Rest B";
             restaurantDescription = "Tasty specialties to satisfy your cravings.";
